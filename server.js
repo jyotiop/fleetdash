@@ -31,4 +31,4 @@ app.post('/api/telemetry', (req, res) => {
     });
 });
 
-app.listen(PORT, () => console.log(`HuRU & JuRU's FleetDash API running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Harshit & Jyoti's FleetDash API running on port ${PORT}`));
