@@ -46,7 +46,7 @@ const PORT = 3000;
 app.use(express.json());
 
 // 🔌 ASK JURU FOR THEIR MONGODB ATLAS CONNECTION STRING AND PASTE IT HERE:
-const MONGO_URI = "YOUR_MONGODB_ATLAS_CONNECTION_STRING_HERE"; 
+const MONGO_URI = "mongodb+srv://kushwahajyoti76881_db_user:<jyotiMongooseDB>@jyotiscluster.xtfdirj.mongodb.net/?appName=jyotiscluster"; 
 
 mongoose.connect(MONGO_URI)
     .then(() => console.log("Connected to FleetDash MongoDB successfully!"))
