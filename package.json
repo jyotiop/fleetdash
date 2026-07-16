@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "fleetdash",
   "version": "1.0.0",
   "description": "Real-time vehicle tracking dashboard - Infotact Solutions internship project (MERN Stack)",
@@ -20,5 +21,9 @@
   "homepage": "https://github.com/jyotiop/fleetdash#readme",
   "dependencies": {
     "mongoose": "^9.7.4"
+=======
+  "dependencies": {
+    "express": "^5.2.1"
+>>>>>>> 206e8c047ee9122e351d2148894f1639d6b6deb1
   }
 }
