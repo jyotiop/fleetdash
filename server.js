@@ -38,33 +38,36 @@ const express = require('express');
 const mongoose = require('mongoose');
 const { Worker } = require('worker_threads');
 const path = require('path');
-const FleetBucket = require('./FleetBucket'); 
+const FleetBucket = require('./FleetBucket'); // JuRU's schema file
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 
-// 🔌 Ask JuRU for the MongoDB Atlas connection string line to insert here:
+// 🔌 ASK JURU FOR THEIR MONGODB ATLAS CONNECTION STRING AND PASTE IT HERE:
 const MONGO_URI = "YOUR_MONGODB_ATLAS_CONNECTION_STRING_HERE"; 
 
 mongoose.connect(MONGO_URI)
     .then(() => console.log("Connected to FleetDash MongoDB successfully!"))
     .catch(err => console.error("MongoDB connection failed:", err));
 
+// Main Ingestion Endpoint
 app.post('/api/telemetry', (req, res) => {
     const telemetryData = req.body;
 
+    // 1. Offload processing to isolated worker thread
     const workerPath = path.resolve(__dirname, 'telemetryWorker.js');
     const worker = new Worker(workerPath, { workerData: telemetryData });
 
+    // 2. Capture parsed coordinates back from background thread
     worker.on('message', async (processedData) => {
         try {
-            // Drop minutes/seconds to locate the exact 1-hour window bucket
+            // Drop minutes/seconds to pinpoint the exact 1-hour window bucket
             const date = new Date(processedData.timestamp);
             date.setMinutes(0, 0, 0); 
 
-            // Update the hourly bucket document atomically using Mongoose
+            // 3. Update the hourly bucket document atomically inside MongoDB
             await FleetBucket.updateOne(
                 { 
                     vehicleId: processedData.vehicleId, 
@@ -80,12 +83,12 @@ app.post('/api/telemetry', (req, res) => {
                         } 
                     }
                 },
-                { upsert: true } 
+                { upsert: true } // Generate a new document if it's the first ping of the hour
             );
 
             res.status(202).json({ 
                 status: "Success", 
-                message: "Data parsed via Worker and bucketed in MongoDB!" 
+                message: "Data processed via Worker and aggregated in MongoDB Bucket!" 
             });
 
         } catch (dbError) {
