@@ -7,17 +7,17 @@
 
 // app.use(express.json());
 
-// // Main Ingestion Endpoint
+
 // app.post('/api/telemetry', (req, res) => {
 //     const telemetryData = req.body;
 
-//     // 1. Offload coordinate parsing to a background worker thread
+
 //     const workerPath = path.resolve(__dirname, 'telemetryWorker.js');
 //     const worker = new Worker(workerPath, { workerData: telemetryData });
 
-//     // 2. Listen for the processed data from the worker thread
+
 //     worker.on('message', (processedData) => {
-//         // Tomorrow, JuRU will save this 'processedData' to MongoDB
+
 //         res.status(202).json({ 
 //             status: "Success", 
 //             message: "Data parsed efficiently in background!",
@@ -43,6 +43,7 @@ const FleetBucket = require('./FleetBucket'); // JuRU's schema file
 const app = express();
 const PORT = 3000;
 
+
 app.use(express.json());
 
 // 🔌 ASK JURU FOR THEIR MONGODB ATLAS CONNECTION STRING AND PASTE IT HERE:
@@ -65,7 +66,7 @@ app.post('/api/telemetry', (req, res) => {
         try {
             // Drop minutes/seconds to pinpoint the exact 1-hour window bucket
             const date = new Date(processedData.timestamp);
-            date.setMinutes(0, 0, 0); 
+            date.setMinutes(0,0,0); 
 
             // 3. Update the hourly bucket document atomically inside MongoDB
             await FleetBucket.updateOne(
@@ -104,3 +105,4 @@ app.post('/api/telemetry', (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`FleetDash pipeline is integrated and running on port ${PORT}`));
+
