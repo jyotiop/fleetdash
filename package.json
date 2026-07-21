@@ -19,6 +19,8 @@
   },
   "homepage": "https://github.com/jyotiop/fleetdash#readme",
   "dependencies": {
-    "mongoose": "^9.7.4"
+    "ioredis": "^5.11.1",
+    "mongoose": "^9.7.4",
+    "socket.io": "^4.8.3"
   }
 }
