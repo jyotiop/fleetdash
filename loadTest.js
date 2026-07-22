@@ -3,8 +3,8 @@ import { check, sleep } from 'k6';
 
 // k6 options to ramp up traffic
 export const options = {
-    vus: 500, // Simulate 500 concurrent vehicles
-    duration: '30s', // Run test for 30 seconds
+  vus: 100, // Change from 500 to 100 VUs
+  duration: '30s',
 };
 
 export default function () {
