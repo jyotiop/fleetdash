@@ -1,4 +1,4 @@
-// 1. IMPORT at the top of telemetryWorker.js
+// 1. IMPORT at the top of telemetryWorker.js.
 const { parentPort } = require('worker_threads');
 const { publishTelemetry } = require('./telemetryPublisher'); 
 
