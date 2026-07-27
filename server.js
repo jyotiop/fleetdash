@@ -24,6 +24,7 @@ const io = setupSocket(server); // Attaches Socket.io engine
 
 app.use(express.json());
 
+
 // 3. MONGODB CONNECTION
 // Replace with your actual MongoDB connection string if required
 const MONGO_URI = 'mongodb+srv://kushwahajyoti76881_db_user:<jyotiMongooseDB@jyotiscluster.xtfdirj.mongodb.net/?appName=jyotiscluster';
@@ -35,6 +36,7 @@ mongoose.connect(MONGO_URI)
 app.post('/api/telemetry', (req, res) => {
   const telemetryData = req.body;
 
+  
   // Offload coordinate parsing to background worker thread
   const workerPath = path.resolve(__dirname, 'telemetryWorker.js');
   const worker = new Worker(workerPath, { workerData: telemetryData });
