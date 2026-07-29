@@ -7,6 +7,7 @@ export const options = {
   duration: '30s',
 };
 
+
 export default function () {
     const url = 'http://localhost:3000/api/telemetry';
     
