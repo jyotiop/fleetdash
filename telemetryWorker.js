@@ -12,6 +12,7 @@ function processHeavyTelemetry(data) {
     };
 }
 
+
 // Process data and send it right back to the main server thread
 const result = processHeavyTelemetry(workerData);
 parentPort.postMessage(result);
