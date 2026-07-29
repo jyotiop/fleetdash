@@ -49,6 +49,7 @@ app.post('/api/telemetry', (req, res) => {
       redisPublisher.publish('vehicle-telemetry', JSON.stringify(processedData));
     }
 
+    
     res.status(202).json({
       status: "Success",
       message: "Data parsed efficiently in background!",
