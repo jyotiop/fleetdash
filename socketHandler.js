@@ -11,6 +11,7 @@ function packCoordinates(lat, lng) {
   return buffer;
 }
 
+
 // 2. This function attaches Socket.io to your Express server
 function setupSocket(server) {
   const io = new Server(server, {
@@ -27,5 +28,6 @@ function setupSocket(server) {
 
   return io;
 }
+
 
 module.exports = { setupSocket, packCoordinates };
