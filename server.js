@@ -89,3 +89,6 @@ if (redisSubscriber) {
 server.listen(PORT, () => {
   console.log(`🚀 Harshit & Jyoti's FleetDash API & Socket server running on port ${PORT}`);
 });
+
+// Export the app and server for Jest Testing
+module.exports = { app, server };
