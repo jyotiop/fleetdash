@@ -1,10 +1,9 @@
+// telemetryWorker.js
 const { parentPort, workerData } = require('worker_threads');
-const { processVehicleAlerts } = require('./alertTriggers'); 
+const { processVehicleAlerts } = require('./alertTriggers');
 
 function processHeavyTelemetry(data) {
-    // Mimic coordinate validation or heavy parsing math
     const timestamp = data.timestamp || new Date().toISOString();
-    
     return {
         vehicleId: data.vehicleId,
         lat: parseFloat(data.location?.lat),
@@ -13,9 +12,10 @@ function processHeavyTelemetry(data) {
     };
 }
 
-// Process data and send it right back to the main server thread
-const result = processHeavyTelemetry(workerData);
-
-processVehicleAlerts(result); 
-
-parentPort.postMessage(result);
+try {
+    const result = processHeavyTelemetry(workerData);
+    processVehicleAlerts(result); 
+    parentPort.postMessage(result);
+} catch (error) {
+    throw new Error("Worker Math Failed: " + error.message);
+}

@@ -1,4 +1,4 @@
-// 1. IMPORTS
+// server.js
 const express = require('express');
 const http = require('http');
 const path = require('path');
@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const { Worker } = require('worker_threads');
 const { setupSocket, packCoordinates } = require('./socketHandler');
 
-// Redis Client Import (Requires JuRU's redisClient.js file)
+// 1. REDIS CLIENT IMPORT
 let redisPublisher, redisSubscriber;
 try {
   const redis = require('./redisClient');
@@ -16,54 +16,54 @@ try {
   console.log('⚠️ redisClient.js not found yet. Running without Redis.');
 }
 
-// 2. INITIALIZE EXPRESS & SOCKET.IO SERVER
+// 2. INITIALIZE SERVER
 const app = express();
 const PORT = 3000;
 const server = http.createServer(app);
-const io = setupSocket(server); // Attaches Socket.io engine
-
+const io = setupSocket(server);
 app.use(express.json());
 
-
 // 3. MONGODB CONNECTION
-// Replace with your actual MongoDB connection string if required
-const MONGO_URI = 'mongodb+srv://kushwahajyoti76881_db_user:<jyotiMongooseDB@jyotiscluster.xtfdirj.mongodb.net/?appName=jyotiscluster';
+const MONGO_URI = 'mongodb+srv://kushwahajyoti76881_db_user:jyotiMongooseDB@jyotiscluster.xtfdirj.mongodb.net/?appName=jyotiscluster';
 mongoose.connect(MONGO_URI)
   .then(() => console.log('✅ Connected to MongoDB successfully!'))
   .catch((err) => console.log('⚠️ MongoDB Connection Note:', err.message));
 
 // 4. MAIN INGESTION ENDPOINT
 app.post('/api/telemetry', (req, res) => {
-  const telemetryData = req.body;
+  try {
+      const telemetryData = req.body;
 
-  
-  // Offload coordinate parsing to background worker thread
-  const workerPath = path.resolve(__dirname, 'telemetryWorker.js');
-  const worker = new Worker(workerPath, { workerData: telemetryData });
+      // Basic validation so the test doesn't crash if data is missing
+      if (!telemetryData || !telemetryData.vehicleId) {
+          return res.status(400).json({ status: "Error", message: "Invalid payload" });
+      }
 
-  // Listen for processed data from worker thread
-  worker.on('message', (processedData) => {
-    
-    // 📡 Publish to Redis channel if Redis is active
-    if (redisPublisher) {
-      redisPublisher.publish('vehicle-telemetry', JSON.stringify(processedData));
-    }
+      const workerPath = path.resolve(__dirname, 'telemetryWorker.js');
+      const worker = new Worker(workerPath, { workerData: telemetryData });
 
-    
-    res.status(202).json({
-      status: "Success",
-      message: "Data parsed efficiently in background!",
-      data: processedData
-    });
-  });
+      worker.on('message', (processedData) => {
+        if (redisPublisher) {
+          redisPublisher.publish('vehicle-telemetry', JSON.stringify(processedData));
+        }
+        // Jest expects a "202 Success" with this exact format
+        res.status(202).json({
+          status: "Success",
+          data: processedData
+        });
+      });
 
-  worker.on('error', (err) => {
-    console.error("Worker Error:", err);
-    res.status(500).json({ error: "Internal processing error" });
-  });
+      worker.on('error', (err) => {
+        console.error("🚨 WORKER CRASH DETECTED:", err.message); // This will print EXACTLY why it failed!
+        res.status(500).json({ status: "Error", message: err.message });
+      });
+
+  } catch (error) {
+      res.status(500).json({ status: "Error", message: error.message });
+  }
 });
 
-// 5. REDIS SUBSCRIBER ➔ SOCKET.IO BROADCAST BRIDGE
+// 5. REDIS BRIDGE
 if (redisSubscriber) {
   redisSubscriber.subscribe('vehicle-telemetry', (err) => {
     if (!err) console.log('📡 Subscribed to vehicle-telemetry Redis channel!');
@@ -72,23 +72,18 @@ if (redisSubscriber) {
   redisSubscriber.on('message', (channel, message) => {
     if (channel === 'vehicle-telemetry') {
       const data = JSON.parse(message);
-
-      // Pack coordinates into binary buffer for ultra-fast transport
       const binaryBuffer = packCoordinates(data.lat, data.lng);
-
-      // Broadcast update to connected map clients
-      io.emit('location-update', {
-        vehicleId: data.vehicleId,
-        location: binaryBuffer
-      });
+      io.emit('location-update', { vehicleId: data.vehicleId, location: binaryBuffer });
     }
   });
 }
 
-// 6. START SERVER (SINGLE listen command)
-server.listen(PORT, () => {
-  console.log(`🚀 Harshit & Jyoti's FleetDash API & Socket server running on port ${PORT}`);
-});
+// 6. SAFE SERVER START (Protects Jest Port Conflicts!)
+// Jest automatically sets NODE_ENV to 'test'. This ensures the port isn't blocked!
+if (process.env.NODE_ENV !== 'test') {
+  server.listen(PORT, () => {
+    console.log(`🚀 Harshit & Jyoti's FleetDash API & Socket server running on port ${PORT}`);
+  });
+}
 
-// Export the app and server for Jest Testing
 module.exports = { app, server };
