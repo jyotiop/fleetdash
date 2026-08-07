@@ -1,4 +1,5 @@
 const { parentPort, workerData } = require('worker_threads');
+const { processVehicleAlerts } = require('./alertTriggers'); 
 
 function processHeavyTelemetry(data) {
     // Mimic coordinate validation or heavy parsing math
@@ -12,7 +13,9 @@ function processHeavyTelemetry(data) {
     };
 }
 
-
 // Process data and send it right back to the main server thread
 const result = processHeavyTelemetry(workerData);
+
+processVehicleAlerts(result); 
+
 parentPort.postMessage(result);
