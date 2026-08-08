@@ -1,10 +1,35 @@
 // telemetry.test.js
+// Mock ioredis before importing server to prevent network socket creation during testing
+jest.mock('ioredis', () => {
+  return jest.fn().mockImplementation(() => {
+    return {
+      publish: jest.fn().mockResolvedValue(1),
+      subscribe: jest.fn().mockResolvedValue(1),
+      on: jest.fn(),
+      quit: jest.fn().mockResolvedValue(true),
+      disconnect: jest.fn().mockResolvedValue(true),
+    };
+  });
+});
+
+// Mock FleetBucket model to avoid database operations during unit tests
+jest.mock('./FleetBucket', () => {
+  return {
+    findOneAndUpdate: jest.fn().mockResolvedValue({}),
+    schema: { index: jest.fn() }
+  };
+});
+
 const request = require('supertest');
+const mongoose = require('mongoose');
 const { app, server } = require('./server'); // Import your Express server
 
-// This tells Jest to shut down the server after the test so it doesn't run forever
-afterAll((done) => {
-    server.close(done);
+// Clean up connections so Jest exits cleanly
+afterAll(async () => {
+    if (server.listening) {
+        await new Promise((resolve) => server.close(resolve));
+    }
+    await mongoose.disconnect();
 });
 
 describe('FleetDash API Ingestion Engine', () => {
