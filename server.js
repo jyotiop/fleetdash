@@ -5,6 +5,7 @@ const path = require('path');
 const mongoose = require('mongoose');
 const { Worker } = require('worker_threads');
 const { setupSocket, packCoordinates } = require('./socketHandler');
+const FleetBucket = require('./FleetBucket');
 
 // 1. REDIS CLIENT IMPORT
 let redisPublisher, redisSubscriber;
@@ -42,10 +43,51 @@ app.post('/api/telemetry', (req, res) => {
       const workerPath = path.resolve(__dirname, 'telemetryWorker.js');
       const worker = new Worker(workerPath, { workerData: telemetryData });
 
-      worker.on('message', (processedData) => {
+      worker.on('message', async (processedData) => {
         if (redisPublisher) {
           redisPublisher.publish('vehicle-telemetry', JSON.stringify(processedData));
         }
+
+        // Publish to geofence-alerts channel if a geofence breach was detected
+        if (processedData.isBreached && redisPublisher) {
+          const alertMessage = JSON.stringify({
+            type: 'GEOFENCE_BREACH',
+            vehicleId: processedData.vehicleId,
+            timestamp: processedData.timestamp
+          });
+          redisPublisher.publish('geofence-alerts', alertMessage);
+        }
+
+        // Save telemetry data to MongoDB Atlas using the Bucket Pattern
+        try {
+          const date = new Date(processedData.timestamp);
+          const hourTimestamp = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), 0, 0, 0));
+
+          await FleetBucket.findOneAndUpdate(
+            { 
+              vehicleId: processedData.vehicleId, 
+              hourTimestamp: hourTimestamp 
+            },
+            {
+              $push: {
+                measurements: {
+                  lat: processedData.lat,
+                  lng: processedData.lng,
+                  timestamp: date
+                }
+              },
+              $inc: { totalPoints: 1 }
+            },
+            { 
+              upsert: true,
+              returnDocument: 'after' 
+            }
+          );
+          console.log(`💾 Telemetry saved to MongoDB Bucket for vehicle ${processedData.vehicleId}`);
+        } catch (dbErr) {
+          console.error("⚠️ Failed to save telemetry to MongoDB:", dbErr.message);
+        }
+
         // Jest expects a "202 Success" with this exact format
         res.status(202).json({
           status: "Success",
@@ -69,11 +111,18 @@ if (redisSubscriber) {
     if (!err) console.log('📡 Subscribed to vehicle-telemetry Redis channel!');
   });
 
+  redisSubscriber.subscribe('geofence-alerts', (err) => {
+    if (!err) console.log('📡 Subscribed to geofence-alerts Redis channel!');
+  });
+
   redisSubscriber.on('message', (channel, message) => {
     if (channel === 'vehicle-telemetry') {
       const data = JSON.parse(message);
       const binaryBuffer = packCoordinates(data.lat, data.lng);
       io.emit('location-update', { vehicleId: data.vehicleId, location: binaryBuffer });
+    } else if (channel === 'geofence-alerts') {
+      const alertData = JSON.parse(message);
+      io.emit('geofence-alert', alertData);
     }
   });
 }
