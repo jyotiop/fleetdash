@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/jyotiop/fleetdash#readme",
   "dependencies": {
+<<<<<<< HEAD
     "@turf/turf": "^6.5.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -29,5 +30,9 @@
   "devDependencies": {
     "jest": "^30.4.2",
     "supertest": "^7.2.2"
+=======
+    "express": "^5.2.1",
+    "mongoose": "^9.7.4"
+>>>>>>> 51fa66d1ab2b7f3e384d8386ab445d8d06af2cc8
   }
 }
