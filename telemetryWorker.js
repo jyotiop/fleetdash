@@ -14,7 +14,7 @@ function processHeavyTelemetry(data) {
 
 try {
     const result = processHeavyTelemetry(workerData);
-    processVehicleAlerts(result); 
+    result.isBreached = processVehicleAlerts(result); 
     parentPort.postMessage(result);
 } catch (error) {
     throw new Error("Worker Math Failed: " + error.message);
