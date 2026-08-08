@@ -21,16 +21,9 @@ function processVehicleAlerts(vehicleData) {
     // 3. If the math says true, sound the alarm!
     if (hasBreached) {
         console.log(`🚨 ALERT: Vehicle ${vehicleData.vehicleId} entered the restricted warehouse zone!`);
-
-        const alertMessage = JSON.stringify({
-            type: 'GEOFENCE_BREACH',
-            vehicleId: vehicleData.vehicleId,
-            timestamp: new Date()
-        });
-
-        // 4. Send the alert to Redis so Socket.io can flash a warning on the frontend
-        // redisPublisher.publish('geofence-alerts', alertMessage);
     }
+
+    return hasBreached;
 }
 
 module.exports = { processVehicleAlerts };
