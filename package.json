@@ -1,8 +1,36 @@
 {
+  "name": "fleetdash",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jyotiop/fleetdash.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/jyotiop/fleetdash/issues"
+  },
+  "homepage": "https://github.com/jyotiop/fleetdash#readme",
   "dependencies": {
+    "@turf/turf": "^6.5.0",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "ioredis": "^5.11.1",
     "mongoose": "^9.7.4",
     "socket.io": "^4.8.3"
+<<<<<<< HEAD
+=======
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2"
+>>>>>>> ad81e8884abb24a86305cc292424cff2c6e3cb43
   }
 }

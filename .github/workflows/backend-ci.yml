@@ -1,0 +1,27 @@
+name: FleetDash Backend CI
+
+# This tells GitHub to run your tests every time code is pushed to the main branch
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get the code from GitHub
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Install Packages
+        run: npm install
+
+      - name: Run Automated Tests
+        run: npm test
