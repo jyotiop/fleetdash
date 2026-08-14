@@ -26,7 +26,7 @@ const io = setupSocket(server);
 app.use(express.json());
 
 // 3. MONGODB CONNECTION
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb+srv://kushwahajyoti76881_db_user:jyotiMongooseDB@jyotiscluster.xtfdirj.mongodb.net/?appName=jyotiscluster';
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb+srv://kushwahajyoti76881_db_user:jyoti5113@jyotiscluster.xtfdirj.mongodb.net/?appName=jyotiscluster';
 mongoose.connect(MONGO_URI)
   .then(() => console.log('✅ Connected to MongoDB successfully!'))
   .catch((err) => console.log('⚠️ MongoDB Connection Note:', err.message));
