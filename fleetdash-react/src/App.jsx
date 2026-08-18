@@ -15,7 +15,7 @@ import "./App.css";
 
 export default function App() {
 
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
 
@@ -26,14 +26,7 @@ export default function App() {
         onClose={() => setSidebarOpen(false)}
       />
 
-      {sidebarOpen && (
-        <div 
-          className="sidebar-overlay" 
-          onClick={() => setSidebarOpen(false)}
-        ></div>
-      )}
-
-      <div className="app-main">
+      <div className={`app-main ${sidebarOpen ? "" : "collapsed"}`}>
 
         <Navbar
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}

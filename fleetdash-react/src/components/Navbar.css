@@ -14,7 +14,7 @@
 }
 
 .menu-btn {
-  display: none;
+  display: flex;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-glass);
   color: var(--text-primary);
@@ -23,7 +23,6 @@
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  display: flex;
   align-items: center;
   justify-content: center;
   transition: var(--transition-smooth);

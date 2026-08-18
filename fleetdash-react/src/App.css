@@ -14,6 +14,10 @@
   transition: var(--transition-smooth);
 }
 
+.app-main.collapsed {
+  margin-left: 0;
+}
+
 .app-content {
   flex: 1;
   padding: 30px;
@@ -24,18 +28,6 @@
 
 @media (max-width: 1024px) {
   .app-main {
-    margin-left: 0;
+    margin-left: 0 !important;
   }
-}
-
-.sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(4px);
-  z-index: 105;
-  transition: var(--transition-smooth);
 }
