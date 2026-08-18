@@ -104,3 +104,34 @@
 .menu.active svg {
   color: var(--text-highlight);
 }
+
+.sidebar-close-btn {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .sidebar-close-btn {
+    display: flex;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: var(--transition-smooth);
+    z-index: 120;
+  }
+  
+  .sidebar-close-btn:hover {
+    background: rgba(244, 63, 94, 0.2);
+    border-color: var(--danger);
+    color: white;
+  }
+}

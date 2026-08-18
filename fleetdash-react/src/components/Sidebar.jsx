@@ -4,7 +4,8 @@ import {
   FiTruck,
   FiAlertTriangle,
   FiBarChart2,
-  FiSettings
+  FiSettings,
+  FiX
 } from "react-icons/fi";
 
 import "./Sidebar.css";
@@ -20,6 +21,10 @@ const menus = [
 export default function Sidebar({ isOpen, onClose }) {
   return (
     <aside className={`sidebar ${isOpen ? "open" : ""}`}>
+
+      <button className="sidebar-close-btn" onClick={onClose} aria-label="Close Sidebar">
+        <FiX />
+      </button>
 
       <h2 className="logo">
         FleetDash
