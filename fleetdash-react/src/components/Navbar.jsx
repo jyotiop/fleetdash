@@ -26,11 +26,11 @@ export default function Navbar({ onMenuClick }) {
         <div className="profile">
 
           <div className="avatar">
-            PN
+            TA
           </div>
 
           <div>
-            <h4>Nikhil</h4>
+            <h4>Team Alpha</h4>
             <small>Administrator</small>
           </div>
 

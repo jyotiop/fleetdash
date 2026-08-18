@@ -26,6 +26,13 @@ export default function App() {
         onClose={() => setSidebarOpen(false)}
       />
 
+      {sidebarOpen && (
+        <div 
+          className="sidebar-overlay" 
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
+
       <div className="app-main">
 
         <Navbar

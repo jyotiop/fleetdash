@@ -60,7 +60,7 @@ export default function Dashboard() {
     <div>
       <div className="dashboard-header">
         <h1>Fleet Dashboard</h1>
-        <p>Welcome back, Nikhil 👋</p>
+        <p>Welcome back, Team Alpha 👋</p>
       </div>
 
       {/* KPI Cards */}

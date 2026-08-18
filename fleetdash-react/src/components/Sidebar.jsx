@@ -36,6 +36,7 @@ export default function Sidebar({ isOpen, onClose }) {
             className={({ isActive }) =>
               isActive ? "menu active" : "menu"
             }
+            onClick={onClose}
           >
             {menu.icon}
             <span>{menu.name}</span>
