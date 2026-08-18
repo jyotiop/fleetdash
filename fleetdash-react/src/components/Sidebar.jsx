@@ -17,9 +17,9 @@ const menus = [
   { name: "Settings", path: "/settings", icon: <FiSettings /> }
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? "open" : ""}`}>
 
       <h2 className="logo">
         FleetDash

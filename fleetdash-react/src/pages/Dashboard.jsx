@@ -83,14 +83,14 @@ export default function Dashboard() {
 
       {/* Vehicle Table + Alerts */}
       <div className="dashboard-grid">
-        <VehicleTable />
+        <VehicleTable liveVehicles={vehicles} />
 
         <div className="panel">
           <h3>Recent Alerts</h3>
 
           <ul>
             {alerts.map((alert) => (
-              <li key={alert.id} style={{ color: "#ff4d4f", fontWeight: "bold" }}>
+              <li key={alert.id} className="alert-item-live">
                 🚨 GEOFENCE BREACH - Vehicle {alert.vehicleId} ({new Date(alert.timestamp).toLocaleTimeString()})
               </li>
             ))}

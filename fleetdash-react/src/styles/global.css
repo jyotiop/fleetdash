@@ -1,57 +1,108 @@
-:root{
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
 
---bg:#0F172A;
-
---card:#1E293B;
-
---primary:#2563EB;
-
---border:#334155;
-
---text:#F8FAFC;
-
-font-family:'Manrope',sans-serif;
-
+:root {
+  /* Color Palette */
+  --bg-space: #060913;
+  --bg-panel: rgba(13, 20, 38, 0.45);
+  --bg-panel-hover: rgba(20, 30, 58, 0.55);
+  --border-glass: rgba(255, 255, 255, 0.05);
+  --border-glass-active: rgba(255, 255, 255, 0.15);
+  
+  /* Brand Accents */
+  --primary: #2563eb;
+  --primary-glow: rgba(37, 99, 235, 0.45);
+  --accent-purple: #8b5cf6;
+  --accent-purple-glow: rgba(139, 92, 246, 0.45);
+  --accent-cyan: #06b6d4;
+  --accent-magenta: #d946ef;
+  
+  /* Status Colors */
+  --success: #10b981;
+  --success-glow: rgba(16, 185, 129, 0.3);
+  --danger: #f43f5e;
+  --danger-glow: rgba(244, 63, 94, 0.3);
+  --warning: #f59e0b;
+  --warning-glow: rgba(245, 158, 11, 0.3);
+  --info: #3b82f6;
+  --info-glow: rgba(59, 130, 246, 0.3);
+  
+  /* Typography Variables */
+  --font-title: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --text-primary: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-highlight: #38bdf8;
+  
+  /* Glassmorphism helpers */
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --glass-backdrop: blur(16px);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-*{
-
-margin:0;
-
-padding:0;
-
-box-sizing:border-box;
-
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-body{
-
-background:var(--bg);
-
-color:var(--text);
-
+body {
+  background: var(--bg-space);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
-a{
-
-text-decoration:none;
-
-color:inherit;
-
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-button{
-
-font-family:inherit;
-
-cursor:pointer;
-
+::-webkit-scrollbar-track {
+  background: rgba(6, 9, 19, 0.5);
 }
 
-table{
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
 
-width:100%;
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-glow);
+}
 
-border-collapse:collapse;
+/* Standard Animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(244, 63, 94, 0.45);
+  }
+}
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: var(--font-body);
+  border: none;
+  background: none;
+  cursor: pointer;
+  outline: none;
+}
+
+input {
+  font-family: var(--font-body);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
 }

@@ -1,47 +1,111 @@
-.sidebar{
-position:fixed;
-left:0;
-top:0;
-bottom:0;
-width:260px;
-background:#16213E;
-padding:30px 20px;
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 260px;
+  background: rgba(7, 10, 22, 0.75);
+  backdrop-filter: var(--glass-backdrop);
+  border-right: 1px solid var(--border-glass);
+  padding: 30px 20px;
+  z-index: 110;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-smooth);
 }
 
-.logo{
-margin-bottom:40px;
-font-size:28px;
+.logo {
+  font-family: var(--font-title);
+  font-weight: 800;
+  font-size: 26px;
+  margin-bottom: 40px;
+  background: linear-gradient(135deg, #ffffff 30%, var(--text-highlight) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.sidebar nav{
-display:flex;
-flex-direction:column;
-gap:12px;
+.logo::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 24px;
+  background: linear-gradient(to bottom, var(--primary), var(--accent-purple));
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
 }
 
-.menu{
-display:flex;
-align-items:center;
-gap:15px;
-padding:15px;
-border-radius:10px;
-color:#CBD5E1;
-transition:.3s;
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.menu:hover{
-background:#253449;
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
 }
 
-.active{
-background:#2563EB;
-color:white;
+.menu svg {
+  font-size: 18px;
+  transition: var(--transition-smooth);
 }
 
-@media(max-width:1024px){
-
-.sidebar{
-display:none;
+.menu:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.02);
+  border-color: var(--border-glass);
+  transform: translateX(4px);
 }
 
+.menu:hover svg {
+  color: var(--text-highlight);
+}
+
+/* Active State with Gradient & Left Border Glow */
+.menu.active {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(139, 92, 246, 0.05));
+  border-color: rgba(37, 99, 235, 0.25);
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: inset 0 0 12px rgba(37, 99, 235, 0.05);
+}
+
+.menu.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  height: 70%;
+  width: 3px;
+  background: linear-gradient(to bottom, var(--primary), var(--accent-purple));
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 0 8px var(--primary);
+}
+
+.menu.active svg {
+  color: var(--text-highlight);
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
 }
