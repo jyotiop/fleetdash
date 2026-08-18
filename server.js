@@ -45,18 +45,42 @@ app.post('/api/telemetry', (req, res) => {
       const worker = new Worker(workerPath, { workerData: telemetryData });
 
       worker.on('message', async (processedData) => {
-        if (redisPublisher) {
-          redisPublisher.publish('vehicle-telemetry', JSON.stringify(processedData));
+        // Safe publish to Redis (prevents crashes if Redis is offline/closed)
+        try {
+          if (redisPublisher && redisPublisher.status === 'ready') {
+            redisPublisher.publish('vehicle-telemetry', JSON.stringify(processedData));
+          }
+        } catch (redisErr) {
+          console.warn('⚠️ Redis publish failed (vehicle-telemetry):', redisErr.message);
+        }
+
+        // Direct Socket emit fallback if Redis is offline
+        if (!redisPublisher || redisPublisher.status !== 'ready') {
+          const binaryBuffer = packCoordinates(processedData.lat, processedData.lng);
+          io.emit('location-update', { vehicleId: processedData.vehicleId, location: binaryBuffer });
         }
 
         // Publish to geofence-alerts channel if a geofence breach was detected
-        if (processedData.isBreached && redisPublisher) {
-          const alertMessage = JSON.stringify({
+        try {
+          if (processedData.isBreached && redisPublisher && redisPublisher.status === 'ready') {
+            const alertMessage = JSON.stringify({
+              type: 'GEOFENCE_BREACH',
+              vehicleId: processedData.vehicleId,
+              timestamp: processedData.timestamp
+            });
+            redisPublisher.publish('geofence-alerts', alertMessage);
+          }
+        } catch (redisErr) {
+          console.warn('⚠️ Redis publish failed (geofence-alerts):', redisErr.message);
+        }
+
+        // Direct Socket alert fallback if Redis is offline
+        if (processedData.isBreached && (!redisPublisher || redisPublisher.status !== 'ready')) {
+          io.emit('geofence-alert', {
             type: 'GEOFENCE_BREACH',
             vehicleId: processedData.vehicleId,
             timestamp: processedData.timestamp
           });
-          redisPublisher.publish('geofence-alerts', alertMessage);
         }
 
         // Save telemetry data to MongoDB Atlas using the Bucket Pattern

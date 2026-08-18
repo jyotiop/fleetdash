@@ -1,24 +1,49 @@
 // demo_pings.js
 // A quick script to simulate live vehicle GPS pings for your video demo.
-// It sends coordinates to the ingestion server every 2 seconds.
+// It sends coordinates to the ingestion server every 2 seconds using native http.
 
-const sendPing = async (vehicleId, lat, lng, note) => {
-  console.log(`📡 Sending coordinates for ${vehicleId}: [${lat}, ${lng}] - (${note})`);
-  try {
-    const response = await fetch('http://127.0.0.1:3000/api/telemetry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        vehicleId,
-        timestamp: new Date().toISOString(),
-        location: { lat, lng }
-      })
+const http = require('http');
+
+const sendPing = (vehicleId, lat, lng, note) => {
+  return new Promise((resolve) => {
+    console.log(`📡 Sending coordinates for ${vehicleId}: [${lat}, ${lng}] - (${note})`);
+    
+    const postData = JSON.stringify({
+      vehicleId,
+      timestamp: new Date().toISOString(),
+      location: { lat, lng }
     });
-    const result = await response.json();
-    console.log(`✅ Server Responded: ${result.status} (HTTP Code: ${response.status})`);
-  } catch (err) {
-    console.error(`❌ Failed to send ping: ${err.message}`);
-  }
+
+    const options = {
+      hostname: 'localhost',
+      port: 3000,
+      path: '/api/telemetry',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(postData)
+      }
+    };
+
+    const req = http.request(options, (res) => {
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        console.log(`✅ Server Responded: ${data.trim()} (HTTP Code: ${res.statusCode})`);
+        resolve();
+      });
+    });
+
+    req.on('error', (err) => {
+      console.error(`❌ Failed to send ping: ${err.message}`);
+      resolve();
+    });
+
+    req.write(postData);
+    req.end();
+  });
 };
 
 const runDemo = async () => {
@@ -27,19 +52,19 @@ const runDemo = async () => {
   // Step 1: Normal route ping (Vehicle VH-2026 starts moving in Hyderabad)
   await sendPing("VH-2026", 17.3850, 78.4867, "Starting normal trip in Hyderabad");
   
-  await new Promise(r => setTimeout(r, 2000));
+  await new Promise(resolve => setTimeout(resolve, 2000));
 
   // Step 2: Normal route ping (Vehicle moves slightly)
   await sendPing("VH-2026", 17.3890, 78.4910, "Moving along route");
 
-  await new Promise(r => setTimeout(r, 2000));
+  await new Promise(resolve => setTimeout(resolve, 2000));
 
   // Step 3: Trigger a geofence breach alert!
   // Restricted boundary covers lat: 28.5310 to 28.5355, lng: 77.3910 to 77.3950
   // Sending exactly inside: lat: 28.5330, lng: 77.3920
   await sendPing("TRUCK-Alpha", 28.5330, 77.3920, "🚨 CRITICAL: Entering restricted warehouse zone");
 
-  await new Promise(r => setTimeout(r, 2000));
+  await new Promise(resolve => setTimeout(resolve, 2000));
 
   // Step 4: Another breach alert to show continuous tracking
   await sendPing("TRUCK-Alpha", 28.5340, 77.3930, "🚨 CRITICAL: Moving inside restricted warehouse zone");
